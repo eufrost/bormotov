@@ -2,19 +2,15 @@
 /*error_reporting(E_ALL);
 ini_set('display_errors', 1);*/
 
-//connect to db
-include 'includes/dbo.inc.php';
+require 'classes/Numbers.php';
+
+$act = new Numbers;
+$act->connectDb();
 
 //adding and editing forms
-if (isset($_GET['add'])) {
-    include 'form.html.php';
-    exit();
-}
-if (isset($_GET['edit'])) {
-    var_dump($_SERVER);die;
-    include 'edit.html.php';
-    exit();
-}
+$act->insertForm('add');
+$act->insertForm('edit');
+
 
 //adding a row from form
 if (isset($_POST['numname'])) {
@@ -25,25 +21,12 @@ if (isset($_POST['numname'])) {
         include 'error.html.php';
         die;
     }
-    $sql = "INSERT INTO nomera SET numname = '$name', number = '$number', adddate = CURDATE()";
-    mysql_query($sql);
+    $act->insertInto($name, $number);
 }
 
 //delete row by id
 if (isset($_GET['delete'])) {
-    try {
-        $sql = 'DELETE FROM nomera WHERE id = :id';
-        $s = $pdo->prepare($sql);
-        $s->bindValue(':id', $_POST['id']);
-        $s->execute();
-    } catch (PDOException $e) {
-        $error = 'Delete error: ' . $e->getMessage();
-        include 'error.html.php';
-        exit();
-    }
-    header('Location: .');
-    exit();
-
+    $act->deleteFrom($_POST['id']);
 }
 
 //edit row
@@ -51,13 +34,7 @@ if (isset($_POST['nameedit']) or isset($_POST['numberedit'])) {
     $id = mysql_real_escape_string($_POST['id']);
     $name = mysql_real_escape_string($_POST['nameedit']);
     $number = mysql_real_escape_string($_POST['numberedit']);
-    $sql = "UPDATE nomera SET numname = '$name', number = '$number' WHERE id = '$id'";
-    mysql_query($sql);
-    /*$s = $pdo->prepare($sql);
-    $s->bindValue(':numname', $_POST['nameedit']);
-    $s->bindValue(':number', $_POST['numberedit']);
-    $s->bindValue(':id', $_POST['id']);
-    $s->execute();*/
+    $act->editRow($name, $number, $id);
 }
 
 //display all data

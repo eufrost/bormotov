@@ -30,6 +30,7 @@ tr:nth-child(odd) {
     background-color: rgba(65, 105, 225, 0.08);
 }
 .button-edit {
+    display: inline-block;
     background-image: url(edit.png) ;
     background-size: cover;
     border: none;
